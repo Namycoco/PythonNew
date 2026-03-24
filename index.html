@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Margaret - Mini Trello</title>
+<!-- Google Fonts: Un par de fuentes bonitas y cursivas -->
+<link href="https://fonts.googleapis.com/css2?family=Parisienne&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+  /* Reset básico */
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background: linear-gradient(135deg, #a2d5c6 0%, #70c1b3 100%);
+    color: #014d4d;
+    margin: 40px;
+    min-height: 100vh;
+  }
+
+  h1 {
+    font-family: 'Parisienne', cursive;
+    font-size: 4rem;
+    text-align: center;
+    color: #1a535c;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 3px rgba(255 255 255 / 0.6);
+  }
+
+  h2 {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 1.8rem;
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    color: #05668d;
+  }
+
+  form {
+    background: rgba(255 255 255 / 0.8);
+    border-radius: 18px;
+    box-shadow: 0 4px 15px rgba(0 0 0 / 0.15);
+    padding: 25px 30px;
+    max-width: 420px;
+    margin: 0 auto 35px auto;
+  }
+
+  input, textarea, select {
+    font-family: 'Quicksand', sans-serif;
+    width: 100%;
+    padding: 14px 18px;
+    margin: 12px 0;
+    border-radius: 12px;
+    border: 2px solid #70c1b3;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #05668d;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: #3aafa9;
+    box-shadow: 0 0 10px #3aafa9aa;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 90px;
+  }
+
+  button {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    background: #3aafa9;
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 14px 0;
+    width: 100%;
+    cursor: pointer;
+    box-shadow: 0 8px 20px #3aafa9bb;
+    transition: background-color 0.3s ease, transform 0.15s ease;
+  }
+  button:hover {
+    background: #2a8a87;
+    transform: scale(1.05);
+  }
+  button:active {
+    transform: scale(0.95);
+  }
+
+  #listaTareas {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .tarea {
+    background-color: #e0f7f5;
+    border-radius: 18px;
+    padding: 18px 25px;
+    margin-bottom: 18px;
+    box-shadow: 0 6px 18px rgba(0 0 0 / 0.1);
+    color: #05668d;
+    font-weight: 600;
+    position: relative;
+  }
+
+  .tarea strong {
+    font-family: 'Parisienne', cursive;
+    font-size: 1.5rem;
+    color: #05668d;
+  }
+
+  .tarea button {
+    position: relative; /* antes era absolute */
+    display: block;     /* ocupa su propia línea */
+    margin-top: 12px;   /* separarlo del contenido */
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    background: #1e656d;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.15s ease;
+}
+.tarea button:hover {
+    background: #144347;
+    transform: scale(1.05);
+}
+  .completada {
+    background-color: #b3e6d9 !important;
+    color: #0a3d33 !important;
+    text-decoration: line-through;
+    font-style: italic;
+  }
+
+  #filtro {
+    max-width: 200px;
+    margin: 0 auto 40px auto;
+    padding: 12px 18px;
+    border-radius: 14px;
+    border: 2px solid #3aafa9;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #05668d;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0 0 0 / 0.15);
+    transition: border-color 0.3s ease;
+  }
+  #filtro:hover, #filtro:focus {
+    border-color: #1e656d;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    body {
+      margin: 20px 15px;
+    }
+    form, #listaTareas {
+      width: 100%;
+      max-width: 100%;
+    }
+    h1 {
+      font-size: 2.5rem;
+    }
+    h2 {
+      font-size: 1.4rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h1>Bienvenido a Margaret 👑</h1>
+
+<!-- FORMULARIO PARA REGISTRAR USUARIOS -->
+<h2>Registrar nuevo usuario</h2>
+<form id="formUsuario">
+    <input type="text" name="nombre" placeholder="Nombre" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="password" name="password" placeholder="Contraseña" required>
+    <button type="submit">Registrar usuario</button>
+</form>
+
+<!-- FORMULARIO PARA CREAR TAREAS -->
+<h2>Crear nueva tarea</h2>
+<form id="formTarea">
+    <input type="text" name="titulo" placeholder="Título de la tarea" required>
+    <textarea name="descripcion" placeholder="Descripción"></textarea>
+    <select name="usuario_id" id="usuario_id" required>
+        <option value="">Selecciona un usuario</option>
+    </select>
+    <button type="submit">Añadir tarea</button>
+</form>
+
+<!-- FILTRO DE TAREAS -->
+<h2>Filtrar tareas</h2>
+<select id="filtro">
+    <option value="todos">Todos</option>
+    <option value="pendiente">Pendientes</option>
+    <option value="completada">Completadas</option>
+</select>
+
+<!-- LISTA DE TAREAS -->
+<h2>Tareas</h2>
+<div id="listaTareas"></div>
+
+<script>
+// ELEMENTOS DEL DOM
+const formUsuario = document.getElementById('formUsuario');
+const formTarea = document.getElementById('formTarea');
+const listaTareas = document.getElementById('listaTareas');
+const filtro = document.getElementById('filtro');
+const selectUsuario = document.getElementById('usuario_id');
+
+// REGISTRAR USUARIO
+formUsuario.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = {
+        nombre: formUsuario.nombre.value,
+        email: formUsuario.email.value,
+        password: formUsuario.password.value
+    };
+    const res = await fetch('/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+    const json = await res.json();
+    if(json.message) alert(json.message);
+    else alert("Error: " + json.error);
+    formUsuario.reset();
+    cargarUsuarios(); // actualizar select de usuarios
+});
+
+// CARGAR USUARIOS EN SELECT
+async function cargarUsuarios() {
+    const res = await fetch('/users');
+    const usuarios = await res.json();
+    selectUsuario.innerHTML = '<option value="">Selecciona un usuario</option>';
+    usuarios.forEach(u => {
+        const option = document.createElement('option');
+        option.value = u.id;
+        option.textContent = u.nombre + " (" + u.email + ")";
+        selectUsuario.appendChild(option);
+    });
+}
+
+// CREAR TAREA
+formTarea.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = {
+        titulo: formTarea.titulo.value,
+        descripcion: formTarea.descripcion.value,
+        usuario_id: parseInt(formTarea.usuario_id.value)
+    };
+    const res = await fetch('/add_task', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+    const json = await res.json();
+    if(json.message) alert(json.message);
+    else alert("Error: " + json.error);
+    formTarea.reset();
+    cargarTareas();
+});
+
+// CARGAR TAREAS
+async function cargarTareas() {
+    const res = await fetch('/tasks');
+    const tareas = await res.json();
+    listaTareas.innerHTML = '';
+    const filtro_valor = filtro.value;
+
+    tareas.forEach(t => {
+        if(filtro_valor !== 'todos' && t.estado !== filtro_valor) return;
+        const div = document.createElement('div');
+        div.className = 'tarea';
+
+     
+        // AQUÍ es donde va el innerHTML actualizado
+        div.innerHTML = `
+            <strong>${t.titulo}</strong> <br>
+            ${t.descripcion} <br>
+            Usuario ID: ${t.usuario_id} <br>
+            Estado: ${t.estado} <br>
+            <button onclick="marcarCompletada(${t.id})">Marcar como completada</button>
+        `;
+
+        listaTareas.appendChild(div);
+    });
+}
+
+// MARCAR TAREA COMO COMPLETADA
+async function marcarCompletada(id) {
+    const res = await fetch(`/complete_task/${id}`, {method:'PUT'});
+    const json = await res.json();
+    if(json.message) alert(json.message);
+    else alert("Error: " + json.error);
+    cargarTareas();
+}
+
+// FILTRO DE TAREAS
+filtro.addEventListener('change', cargarTareas);
+
+// CARGAR DATOS INICIALES
+cargarUsuarios();
+cargarTareas();
+</script>
+
+</body>
+</html>
